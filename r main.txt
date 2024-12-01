@@ -1,0 +1,26 @@
+// Define the geometry for Nairobi County (you can get the geometry from a shapefile or use a pre-defined region)
+var nairobi = ee.Geometry.Polygon([
+  [[36.6, -1.5], [36.6, -1.1], [37.0, -1.1], [37.0, -1.5]]
+]);
+
+// Load population data, for example, from the WorldPop dataset
+var population = ee.ImageCollection("WorldPop/GP/100m/pop")
+                  .filterDate('2020-01-01', '2020-12-31')
+                  .mosaic();  // Get the population data for 2020
+
+// Clip the population data to the Nairobi region
+var popNairobi = population.clip(nairobi);
+
+// Define the visualization parameters
+var popVis = {
+    min: 0,
+    max: 50,
+    palette: ["black", "yellow", "white"]
+};
+
+// Display the population layer on the map
+Map.centerObject(nairobi, 10);  // Center the map on Nairobi at zoom level 10
+Map.addLayer(popNairobi, popVis, 'Population in Nairobi');
+
+// Optionally, add the border of Nairobi county to the map
+Map.addLayer(nairobi, {color: 'red'}, 'Nairobi Border');
